@@ -2,8 +2,10 @@
 
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:instagram_clone/bloc/current_user_data/current_user_data_bloc.dart';
 import 'package:instagram_clone/utils/colors.dart';
 import 'package:instagram_clone/utils/utis.dart';
 
@@ -86,7 +88,7 @@ class _AddPostState extends State<AddPost> {
 
   @override
   Widget build(BuildContext context) {
-    return selectedPostImage != null
+    return selectedPostImage == null
         ? Center(
             child: IconButton(
               icon: const Icon(
@@ -128,6 +130,62 @@ class _AddPostState extends State<AddPost> {
                   ),
                 ),
               ],
+            ),
+            body: Padding(
+              padding: const EdgeInsets.all(15),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      BlocBuilder<CurrentUserDataBloc, CurrentUserDataState>(
+                        builder: (context, state) {
+                          if (state is CurrentUserDataSuccess) {
+                            return CircleAvatar(
+                              radius: 22,
+                              backgroundColor: secondaryColor,
+                              backgroundImage: state.user.avatar != ""
+                                  ? NetworkImage(state.user.avatar)
+                                  : const AssetImage("assets/images/avatar.png")
+                                      as ImageProvider<Object>?,
+                            );
+                          }
+
+                          return Container();
+                        },
+                      ),
+                      const SizedBox(
+                        width: 15,
+                      ),
+                      const Expanded(
+                        child: TextField(
+                          cursorColor: Colors.blueAccent,
+                          style: TextStyle(
+                            color: primaryColor,
+                            fontSize: 17.5,
+                          ),
+                          decoration: InputDecoration(
+                            hintText: "Write a caption...",
+                            hintStyle: TextStyle(
+                              color: secondaryColor,
+                              fontSize: 17.5,
+                            ),
+                            border: InputBorder.none,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 15,
+                      ),
+                      Image.file(
+                        selectedPostImage!,
+                        width: 50,
+                        height: 50,
+                        fit: BoxFit.cover,
+                      )
+                    ],
+                  ),
+                ],
+              ),
             ),
           );
   }

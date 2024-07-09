@@ -105,7 +105,7 @@ class _SignupScreenState extends State<SignupScreen> {
                           fit: StackFit.expand,
                           children: [
                             CircleAvatar(
-                              backgroundColor: Colors.white,
+                              backgroundColor: secondaryColor,
                               child: ClipOval(
                                 child: (selectedAvatar != null)
                                     ? Image.file(
