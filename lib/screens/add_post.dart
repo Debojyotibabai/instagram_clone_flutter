@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, avoid_print
 
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:instagram_clone/bloc/current_user_data/current_user_data_bloc.dart';
+import 'package:instagram_clone/resources/post_methods.dart';
 import 'package:instagram_clone/utils/colors.dart';
 import 'package:instagram_clone/utils/utis.dart';
 
@@ -19,7 +20,15 @@ class AddPost extends StatefulWidget {
 class _AddPostState extends State<AddPost> {
   final ImagePicker _picker = ImagePicker();
 
+  final TextEditingController captionController = TextEditingController();
+
   File? selectedPostImage;
+
+  @override
+  void dispose() {
+    captionController.dispose();
+    super.dispose();
+  }
 
   void pickImage(type) async {
     final image = await _picker.pickImage(
@@ -35,6 +44,23 @@ class _AddPostState extends State<AddPost> {
     });
 
     context.pop();
+  }
+
+  void post(String uid, String userName, String avatar) async {
+    final response = await PostMethods().addPost(
+      captionController.text,
+      selectedPostImage!,
+      uid,
+      userName,
+      avatar,
+    );
+
+    print(response);
+
+    setState(() {
+      captionController.text = "";
+      selectedPostImage = null;
+    });
   }
 
   Future selectImage(BuildContext context) {
@@ -119,15 +145,29 @@ class _AddPostState extends State<AddPost> {
               ),
               centerTitle: false,
               actions: [
-                TextButton(
-                  onPressed: () {},
-                  child: const Text(
-                    "Post",
-                    style: TextStyle(
-                      color: Colors.blueAccent,
-                      fontSize: 19,
-                    ),
-                  ),
+                BlocBuilder<CurrentUserDataBloc, CurrentUserDataState>(
+                  builder: (context, state) {
+                    if (state is CurrentUserDataSuccess) {
+                      return TextButton(
+                        onPressed: () {
+                          post(
+                            state.user.uid,
+                            state.user.userName,
+                            state.user.avatar,
+                          );
+                        },
+                        child: const Text(
+                          "Post",
+                          style: TextStyle(
+                            color: Colors.blueAccent,
+                            fontSize: 19,
+                          ),
+                        ),
+                      );
+                    }
+
+                    return Container();
+                  },
                 ),
               ],
             ),
@@ -135,54 +175,59 @@ class _AddPostState extends State<AddPost> {
               padding: const EdgeInsets.all(15),
               child: Column(
                 children: [
-                  Row(
-                    children: [
-                      BlocBuilder<CurrentUserDataBloc, CurrentUserDataState>(
-                        builder: (context, state) {
-                          if (state is CurrentUserDataSuccess) {
-                            return CircleAvatar(
+                  BlocBuilder<CurrentUserDataBloc, CurrentUserDataState>(
+                    builder: (context, state) {
+                      if (state is CurrentUserDataLoading) {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+
+                      if (state is CurrentUserDataSuccess) {
+                        return Row(
+                          children: [
+                            CircleAvatar(
                               radius: 22,
                               backgroundColor: secondaryColor,
                               backgroundImage: state.user.avatar != ""
                                   ? NetworkImage(state.user.avatar)
                                   : const AssetImage("assets/images/avatar.png")
                                       as ImageProvider<Object>?,
-                            );
-                          }
-
-                          return Container();
-                        },
-                      ),
-                      const SizedBox(
-                        width: 15,
-                      ),
-                      const Expanded(
-                        child: TextField(
-                          cursorColor: Colors.blueAccent,
-                          style: TextStyle(
-                            color: primaryColor,
-                            fontSize: 17.5,
-                          ),
-                          decoration: InputDecoration(
-                            hintText: "Write a caption...",
-                            hintStyle: TextStyle(
-                              color: secondaryColor,
-                              fontSize: 17.5,
                             ),
-                            border: InputBorder.none,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 15,
-                      ),
-                      Image.file(
-                        selectedPostImage!,
-                        width: 50,
-                        height: 50,
-                        fit: BoxFit.cover,
-                      )
-                    ],
+                            const SizedBox(
+                              width: 15,
+                            ),
+                            const Expanded(
+                              child: TextField(
+                                cursorColor: Colors.blueAccent,
+                                style: TextStyle(
+                                  color: primaryColor,
+                                  fontSize: 17.5,
+                                ),
+                                decoration: InputDecoration(
+                                  hintText: "Write a caption...",
+                                  hintStyle: TextStyle(
+                                    color: secondaryColor,
+                                    fontSize: 17.5,
+                                  ),
+                                  border: InputBorder.none,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 15,
+                            ),
+                            Image.file(
+                              selectedPostImage!,
+                              width: 50,
+                              height: 50,
+                              fit: BoxFit.cover,
+                            )
+                          ],
+                        );
+                      }
+                      return Container();
+                    },
                   ),
                 ],
               ),
