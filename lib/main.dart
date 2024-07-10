@@ -9,8 +9,8 @@ import 'package:instagram_clone/router/router.dart';
 import 'package:instagram_clone/utils/colors.dart';
 
 void main() async {
-  await dotenv.load(fileName: ".env");
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
 
   if (kIsWeb || defaultTargetPlatform == TargetPlatform.android) {
     await Firebase.initializeApp(

@@ -23,6 +23,7 @@ class _AddPostState extends State<AddPost> {
   final TextEditingController captionController = TextEditingController();
 
   File? selectedPostImage;
+  bool isPosting = false;
 
   @override
   void dispose() {
@@ -47,20 +48,30 @@ class _AddPostState extends State<AddPost> {
   }
 
   void post(String uid, String userName, String avatar) async {
+    setState(() {
+      isPosting = true;
+    });
+
     final response = await PostMethods().addPost(
-      captionController.text,
-      selectedPostImage!,
-      uid,
-      userName,
-      avatar,
+      caption: captionController.text,
+      image: selectedPostImage!,
+      uid: uid,
+      userName: userName,
+      avatar: avatar,
     );
 
-    print(response);
+    showSnackbar(context, response["message"]!);
 
     setState(() {
-      captionController.text = "";
-      selectedPostImage = null;
+      isPosting = false;
     });
+
+    if (response["status"] == "success") {
+      setState(() {
+        captionController.text = "";
+        selectedPostImage = null;
+      });
+    }
   }
 
   Future selectImage(BuildContext context) {
@@ -171,11 +182,19 @@ class _AddPostState extends State<AddPost> {
                 ),
               ],
             ),
-            body: Padding(
-              padding: const EdgeInsets.all(15),
-              child: Column(
-                children: [
-                  BlocBuilder<CurrentUserDataBloc, CurrentUserDataState>(
+            body: Column(
+              children: [
+                isPosting
+                    ? const Padding(
+                        padding: EdgeInsets.only(bottom: 20),
+                        child: LinearProgressIndicator(
+                          color: Colors.blueAccent,
+                        ),
+                      )
+                    : Container(),
+                Padding(
+                  padding: const EdgeInsets.all(15),
+                  child: BlocBuilder<CurrentUserDataBloc, CurrentUserDataState>(
                     builder: (context, state) {
                       if (state is CurrentUserDataLoading) {
                         return const Center(
@@ -197,14 +216,14 @@ class _AddPostState extends State<AddPost> {
                             const SizedBox(
                               width: 15,
                             ),
-                            const Expanded(
+                            Expanded(
                               child: TextField(
                                 cursorColor: Colors.blueAccent,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   color: primaryColor,
                                   fontSize: 17.5,
                                 ),
-                                decoration: InputDecoration(
+                                decoration: const InputDecoration(
                                   hintText: "Write a caption...",
                                   hintStyle: TextStyle(
                                     color: secondaryColor,
@@ -212,6 +231,8 @@ class _AddPostState extends State<AddPost> {
                                   ),
                                   border: InputBorder.none,
                                 ),
+                                onChanged: (value) =>
+                                    captionController.text = value,
                               ),
                             ),
                             const SizedBox(
@@ -229,8 +250,8 @@ class _AddPostState extends State<AddPost> {
                       return Container();
                     },
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           );
   }

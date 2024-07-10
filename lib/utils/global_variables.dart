@@ -4,7 +4,7 @@ import 'package:instagram_clone/screens/add_post.dart';
 
 const webScreenSize = 600;
 const screenOptions = <Widget>[
-  AddPost(), //TODO: change later
+  Home(),
   Text("Search"),
   AddPost(),
   Text("Favorite"),
