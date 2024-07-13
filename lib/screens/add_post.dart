@@ -131,6 +131,7 @@ class _AddPostState extends State<AddPost> {
               icon: const Icon(
                 Icons.upload,
                 size: 30,
+                color: primaryColor,
               ),
               onPressed: () {
                 selectImage(context);
