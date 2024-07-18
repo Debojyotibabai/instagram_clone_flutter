@@ -39,7 +39,7 @@ class _HomeState extends State<Home> {
         ],
       ),
       body: ListView.builder(
-        itemCount: 1,
+        itemCount: 5,
         itemBuilder: (context, index) {
           return const PostCard();
         },
