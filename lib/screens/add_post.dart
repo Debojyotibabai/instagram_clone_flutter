@@ -7,7 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:instagram_clone/bloc/current_user_data/current_user_data_bloc.dart';
 import 'package:instagram_clone/resources/post_methods.dart';
-import 'package:instagram_clone/utils/colors.dart';
+import 'package:instagram_clone/core/theme/colors.dart';
 import 'package:instagram_clone/utils/utis.dart';
 
 class AddPost extends StatefulWidget {

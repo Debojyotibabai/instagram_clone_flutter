@@ -2,8 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:instagram_clone/responsive/responsive_layout.dart';
-import 'package:instagram_clone/screens/login_screen.dart';
-import 'package:instagram_clone/screens/signup_screen.dart';
+import 'package:instagram_clone/feature/auth/presentation/pages/login_screen.dart';
+import 'package:instagram_clone/feature/auth/presentation/pages/signup_screen.dart';
 
 class AppRouter {
   final GoRouter router = GoRouter(

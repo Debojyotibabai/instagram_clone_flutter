@@ -3,7 +3,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:instagram_clone/utils/colors.dart';
+import 'package:instagram_clone/core/theme/colors.dart';
 import 'package:instagram_clone/widgets/post_card.dart';
 
 class Home extends StatefulWidget {

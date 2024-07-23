@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:instagram_clone/utils/colors.dart';
+import 'package:instagram_clone/core/theme/colors.dart';
 import 'package:instagram_clone/utils/global_variables.dart';
 
 class MobileLayout extends StatefulWidget {

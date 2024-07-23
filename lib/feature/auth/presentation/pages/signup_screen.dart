@@ -2,14 +2,15 @@
 
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:instagram_clone/resources/auth_methods.dart';
-import 'package:instagram_clone/utils/colors.dart';
+import 'package:instagram_clone/feature/auth/presentation/bloc/auth/auth_bloc.dart';
+import 'package:instagram_clone/core/theme/colors.dart';
 import 'package:instagram_clone/utils/regexp.dart';
 import 'package:instagram_clone/utils/utis.dart';
-import 'package:instagram_clone/widgets/custom_text_form_field.dart';
+import 'package:instagram_clone/feature/auth/presentation/widgets/custom_text_form_field.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -30,8 +31,6 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _bioController = TextEditingController();
 
-  bool isSigningUp = false;
-
   @override
   void dispose() {
     super.dispose();
@@ -44,29 +43,15 @@ class _SignupScreenState extends State<SignupScreen> {
 
   void signup() async {
     if (_formKey.currentState!.validate()) {
-      setState(() {
-        isSigningUp = true;
-      });
-
-      final response = await AuthMethods().signup(
-        avatar: selectedAvatar,
-        userName: _userNameController.text,
-        email: _emailController.text,
-        password: _passwordController.text,
-        bio: _bioController.text,
+      BlocProvider.of<AuthBloc>(context).add(
+        AuthSignup(
+          avatar: selectedAvatar,
+          userName: _userNameController.text,
+          email: _emailController.text,
+          password: _passwordController.text,
+          bio: _bioController.text,
+        ),
       );
-
-      if (!mounted) return;
-
-      setState(() {
-        isSigningUp = false;
-      });
-
-      showSnackbar(context, response["message"]!);
-
-      if (response["status"] == "success") {
-        context.replace("/");
-      }
     }
   }
 
@@ -208,8 +193,22 @@ class _SignupScreenState extends State<SignupScreen> {
                               Colors.blueAccent,
                             ),
                           ),
-                          child: isSigningUp
-                              ? const SizedBox(
+                          child: BlocConsumer<AuthBloc, AuthState>(
+                            listener: (context, state) {
+                              if (state is AuthSuccess) {
+                                showSnackbar(
+                                  context,
+                                  state.response["message"]!,
+                                );
+                                context.replace("/");
+                              } else if (state is AuthError) {
+                                showSnackbar(
+                                    context, state.response["message"]!);
+                              }
+                            },
+                            builder: (context, state) {
+                              if (state is AuthLoading) {
+                                return const SizedBox(
                                   height: 23.5,
                                   width: 23.5,
                                   child: Center(
@@ -218,15 +217,18 @@ class _SignupScreenState extends State<SignupScreen> {
                                       strokeWidth: 2.5,
                                     ),
                                   ),
-                                )
-                              : const Text(
-                                  "Sign up",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                );
+                              }
+                              return const Text(
+                                "Sign up",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.bold,
                                 ),
+                              );
+                            },
+                          ),
                         ),
                       ),
                       Container(

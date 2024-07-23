@@ -1,13 +1,14 @@
 // ignore_for_file: use_build_context_synchronously, deprecated_member_use
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:instagram_clone/resources/auth_methods.dart';
-import 'package:instagram_clone/utils/colors.dart';
+import 'package:instagram_clone/feature/auth/presentation/bloc/auth/auth_bloc.dart';
+import 'package:instagram_clone/core/theme/colors.dart';
 import 'package:instagram_clone/utils/regexp.dart';
+import 'package:instagram_clone/feature/auth/presentation/widgets/custom_text_form_field.dart';
 import 'package:instagram_clone/utils/utis.dart';
-import 'package:instagram_clone/widgets/custom_text_form_field.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -22,31 +23,23 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  bool isLoginUp = false;
-
   void login() async {
     if (_formKey.currentState!.validate()) {
-      setState(() {
-        isLoginUp = true;
-      });
-
-      final response = await AuthMethods().login(
-        email: _emailController.text,
-        password: _passwordController.text,
+      BlocProvider.of<AuthBloc>(context).add(
+        AuthLogin(
+          email: _emailController.text,
+          password: _passwordController.text,
+        ),
       );
-
-      if (!mounted) return;
-
-      setState(() {
-        isLoginUp = false;
-      });
-
-      showSnackbar(context, response["message"]!);
-
-      if (response["status"] == "success") {
-        context.replace("/");
-      }
     }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+
+    _emailController.dispose();
+    _passwordController.dispose();
   }
 
   @override
@@ -107,8 +100,22 @@ class _LoginScreenState extends State<LoginScreen> {
                               Colors.blueAccent,
                             ),
                           ),
-                          child: isLoginUp
-                              ? const SizedBox(
+                          child: BlocConsumer<AuthBloc, AuthState>(
+                            listener: (context, state) {
+                              if (state is AuthSuccess) {
+                                showSnackbar(
+                                  context,
+                                  state.response["message"]!,
+                                );
+                                context.replace("/");
+                              } else if (state is AuthError) {
+                                showSnackbar(
+                                    context, state.response["message"]!);
+                              }
+                            },
+                            builder: (context, state) {
+                              if (state is AuthLoading) {
+                                return const SizedBox(
                                   height: 23.5,
                                   width: 23.5,
                                   child: Center(
@@ -117,15 +124,18 @@ class _LoginScreenState extends State<LoginScreen> {
                                       strokeWidth: 2.5,
                                     ),
                                   ),
-                                )
-                              : const Text(
-                                  "Login",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                );
+                              }
+                              return const Text(
+                                "Login",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.bold,
                                 ),
+                              );
+                            },
+                          ),
                         ),
                       ),
                       Container(

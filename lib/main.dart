@@ -1,12 +1,19 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:instagram_clone/bloc/current_user_data/current_user_data_bloc.dart';
+import 'package:instagram_clone/feature/auth/data/data_source/auth_data_source.dart';
+import 'package:instagram_clone/feature/auth/data/repository/auth_repository_impl.dart';
+import 'package:instagram_clone/feature/auth/domain/use_case/user_login.dart';
+import 'package:instagram_clone/feature/auth/domain/use_case/user_sign_up.dart';
+import 'package:instagram_clone/feature/auth/presentation/bloc/auth/auth_bloc.dart';
 import 'package:instagram_clone/router/router.dart';
-import 'package:instagram_clone/utils/colors.dart';
+import 'package:instagram_clone/core/theme/colors.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,6 +36,28 @@ void main() async {
   runApp(
     MultiBlocProvider(
       providers: [
+        BlocProvider(
+          create: (context) => AuthBloc(
+            userSignup: UserSignup(
+              authRepository: AuthRepositoryImpl(
+                authDataSource: AuthDataSourceImpl(
+                  auth: FirebaseAuth.instance,
+                  firestore: FirebaseFirestore.instance,
+                  storage: FirebaseStorage.instance,
+                ),
+              ),
+            ),
+            userLogin: UserLogin(
+              authRepository: AuthRepositoryImpl(
+                authDataSource: AuthDataSourceImpl(
+                  auth: FirebaseAuth.instance,
+                  firestore: FirebaseFirestore.instance,
+                  storage: FirebaseStorage.instance,
+                ),
+              ),
+            ),
+          ),
+        ),
         BlocProvider(create: (context) => CurrentUserDataBloc()),
       ],
       child: const MyApp(),
