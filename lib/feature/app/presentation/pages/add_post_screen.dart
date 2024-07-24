@@ -5,19 +5,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:instagram_clone/bloc/current_user_data/current_user_data_bloc.dart';
+import 'package:instagram_clone/feature/app/presentation/bloc/current_user/current_user_bloc.dart';
 import 'package:instagram_clone/resources/post_methods.dart';
 import 'package:instagram_clone/core/theme/colors.dart';
-import 'package:instagram_clone/utils/utis.dart';
+import 'package:instagram_clone/core/utils/utis.dart';
 
-class AddPost extends StatefulWidget {
-  const AddPost({super.key});
+class AddPostScreen extends StatefulWidget {
+  const AddPostScreen({super.key});
 
   @override
-  State<AddPost> createState() => _AddPostState();
+  State<AddPostScreen> createState() => _AddPostScreenState();
 }
 
-class _AddPostState extends State<AddPost> {
+class _AddPostScreenState extends State<AddPostScreen> {
   final ImagePicker _picker = ImagePicker();
 
   final TextEditingController captionController = TextEditingController();
@@ -157,9 +157,9 @@ class _AddPostState extends State<AddPost> {
               ),
               centerTitle: false,
               actions: [
-                BlocBuilder<CurrentUserDataBloc, CurrentUserDataState>(
+                BlocBuilder<CurrentUserBloc, CurrentUserState>(
                   builder: (context, state) {
-                    if (state is CurrentUserDataSuccess) {
+                    if (state is CurrentUserSuccess) {
                       return TextButton(
                         onPressed: () {
                           post(
@@ -195,15 +195,15 @@ class _AddPostState extends State<AddPost> {
                     : Container(),
                 Padding(
                   padding: const EdgeInsets.all(15),
-                  child: BlocBuilder<CurrentUserDataBloc, CurrentUserDataState>(
+                  child: BlocBuilder<CurrentUserBloc, CurrentUserState>(
                     builder: (context, state) {
-                      if (state is CurrentUserDataLoading) {
+                      if (state is CurrentUserLoading) {
                         return const Center(
                           child: CircularProgressIndicator(),
                         );
                       }
 
-                      if (state is CurrentUserDataSuccess) {
+                      if (state is CurrentUserSuccess) {
                         return Row(
                           children: [
                             CircleAvatar(

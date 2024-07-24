@@ -8,8 +8,8 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:instagram_clone/feature/auth/presentation/bloc/auth/auth_bloc.dart';
 import 'package:instagram_clone/core/theme/colors.dart';
-import 'package:instagram_clone/utils/regexp.dart';
-import 'package:instagram_clone/utils/utis.dart';
+import 'package:instagram_clone/core/utils/regexp.dart';
+import 'package:instagram_clone/core/utils/utis.dart';
 import 'package:instagram_clone/feature/auth/presentation/widgets/custom_text_form_field.dart';
 
 class SignupScreen extends StatefulWidget {

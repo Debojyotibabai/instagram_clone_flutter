@@ -5,15 +5,16 @@ import 'package:instagram_clone/feature/auth/domain/repository/auth_repository.d
 class UserLogin
     implements
         UseCase<Map<String, String>, Map<String, String>, UserLoginParams> {
-  UserLogin({required this.authRepository});
+  UserLogin({required AuthRepository authRepository})
+      : _authRepository = authRepository;
 
-  final AuthRepository authRepository;
+  final AuthRepository _authRepository;
 
   @override
   Future<Either<Map<String, String>, Map<String, String>>> call(
     UserLoginParams params,
   ) async {
-    return await authRepository.login(
+    return await _authRepository.login(
       email: params.email,
       password: params.password,
     );

@@ -6,9 +6,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:instagram_clone/feature/auth/presentation/bloc/auth/auth_bloc.dart';
 import 'package:instagram_clone/core/theme/colors.dart';
-import 'package:instagram_clone/utils/regexp.dart';
+import 'package:instagram_clone/core/utils/regexp.dart';
 import 'package:instagram_clone/feature/auth/presentation/widgets/custom_text_form_field.dart';
-import 'package:instagram_clone/utils/utis.dart';
+import 'package:instagram_clone/core/utils/utis.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
