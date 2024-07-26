@@ -1,14 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:instagram_clone/feature/app/data/data_source/add_post_data_source.dart';
-import 'package:instagram_clone/feature/app/data/data_source/current_user_data_source.dart';
-import 'package:instagram_clone/feature/app/data/repository/add_post_repository_impl.dart';
-import 'package:instagram_clone/feature/app/data/repository/current_user_repository_impl.dart';
-import 'package:instagram_clone/feature/app/domain/use_case/add_post.dart';
-import 'package:instagram_clone/feature/app/domain/use_case/get_current_user_data.dart';
 import 'package:instagram_clone/feature/app/presentation/bloc/add_post/add_post_bloc.dart';
 import 'package:instagram_clone/feature/app/presentation/bloc/current_user/current_user_bloc.dart';
 import 'package:instagram_clone/feature/auth/presentation/bloc/auth/auth_bloc.dart';
@@ -28,26 +20,10 @@ void main() async {
           create: (context) => serviceLocator<AuthBloc>(),
         ),
         BlocProvider(
-          create: (context) => CurrentUserBloc(
-            getCurrentUserData: GetCurrentUserData(
-              currentUserRepository: CurrentUserRepositoryImpl(
-                currentUserDataSource:
-                    CurrentUserDataSourceImpl(auth: FirebaseAuth.instance),
-              ),
-            ),
-          ),
+          create: (context) => serviceLocator<CurrentUserBloc>(),
         ),
         BlocProvider(
-          create: (context) => AddPostBloc(
-            addPost: AddPost(
-              addPostRepository: AddPostRepositoryImpl(
-                addPostDataSource: AddPostDataSourceImpl(
-                  firestore: FirebaseFirestore.instance,
-                  storage: FirebaseStorage.instance,
-                ),
-              ),
-            ),
-          ),
+          create: (context) => serviceLocator<AddPostBloc>(),
         ),
       ],
       child: const MyApp(),
