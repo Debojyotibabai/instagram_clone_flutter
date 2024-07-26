@@ -1,14 +1,32 @@
 // ignore_for_file: avoid_print
 
 import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:instagram_clone/core/model/post_model.dart';
 import 'package:uuid/uuid.dart';
 
-class PostMethods {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseStorage _storage = FirebaseStorage.instance;
+abstract interface class AddPostDataSource {
+  Future<Map<String, String>> addPost({
+    required String caption,
+    required File image,
+    required String uid,
+    required String userName,
+    required String avatar,
+  });
+}
+
+class AddPostDataSourceImpl implements AddPostDataSource {
+  final FirebaseStorage _storage;
+  final FirebaseFirestore _firestore;
+
+  AddPostDataSourceImpl(
+      {required FirebaseStorage storage, required FirebaseFirestore firestore})
+      : _storage = storage,
+        _firestore = firestore;
+
+  @override
   Future<Map<String, String>> addPost({
     required String caption,
     required File image,
@@ -46,7 +64,7 @@ class PostMethods {
       return {"status": "success", "message": "Posted successfully"};
     } catch (err) {
       print(err);
-      return {"status": "error", "message": err.toString()};
+      throw {"status": "error", "message": err.toString()};
     }
   }
 }

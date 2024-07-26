@@ -6,9 +6,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:instagram_clone/feature/app/data/data_source/add_post_data_source.dart';
 import 'package:instagram_clone/feature/app/data/data_source/current_user_data_source.dart';
+import 'package:instagram_clone/feature/app/data/repository/add_post_repository_impl.dart';
 import 'package:instagram_clone/feature/app/data/repository/current_user_repository_impl.dart';
+import 'package:instagram_clone/feature/app/domain/use_case/add_post.dart';
 import 'package:instagram_clone/feature/app/domain/use_case/get_current_user_data.dart';
+import 'package:instagram_clone/feature/app/presentation/bloc/add_post/add_post_bloc.dart';
 import 'package:instagram_clone/feature/app/presentation/bloc/current_user/current_user_bloc.dart';
 import 'package:instagram_clone/feature/auth/data/data_source/auth_data_source.dart';
 import 'package:instagram_clone/feature/auth/data/repository/auth_repository_impl.dart';
@@ -67,6 +71,18 @@ void main() async {
               currentUserRepository: CurrentUserRepositoryImpl(
                 currentUserDataSource:
                     CurrentUserDataSourceImpl(auth: FirebaseAuth.instance),
+              ),
+            ),
+          ),
+        ),
+        BlocProvider(
+          create: (context) => AddPostBloc(
+            addPost: AddPost(
+              addPostRepository: AddPostRepositoryImpl(
+                addPostDataSource: AddPostDataSourceImpl(
+                  firestore: FirebaseFirestore.instance,
+                  storage: FirebaseStorage.instance,
+                ),
               ),
             ),
           ),
